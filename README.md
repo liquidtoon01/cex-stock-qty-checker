@@ -4,7 +4,7 @@ https://pushover.net/
 
 ![Screenshot of notifications](image-4.PNG)
 
-And to get a summary of what is in stock and where locally
+And to get a summary.
 
 ![summary of what is currently in stock](image-2.png)
 
