@@ -2,7 +2,7 @@
 PowerShell script to check specific stores for specific stock and can send a notification to your device using Pushover
 https://pushover.net/
 
-![Screenshot of notifications](image-4.png)
+![Screenshot of notifications](image-4.PNG)
 
 And to get a summary of what is in stock and where locally
 
