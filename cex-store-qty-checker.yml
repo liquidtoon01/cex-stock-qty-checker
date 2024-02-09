@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cexstoreqtycheck
+data:
+  cexstoreqtycheck.ps1: |-
+      [CmdletBinding()]
+      Param (
+          [Parameter(Mandatory=$true)]
+          [string]$ItemsToCheckFilePath,
+          [string]$PushoverToken,
+          [string]$PushoverUser
+      )
+      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+      #Items to check
+      [array] $items = Get-Content -Path $ItemsToCheckFilePath
+      $ErrorActionPreference = 'SilentlyContinue'
+      foreach ($i in $items) { ($items[$items.IndexOf($i)] = $i.SubString(0, $i.IndexOf('#'))).trim() } 
+      foreach ($i in $items) { ($items[$items.IndexOf($i)] = $i.SubString(0, $i.IndexOf(' '))).trim() }
+      Clear-Host 
+      $ErrorActionPreference = 'Break'
+
+      $wantedinstockpath = "/cex/wanted-games-stock-qty.txt"
+      if(Test-Path $wantedinstockpath){}
+      else {New-Item -Name $wantedinstockpath }
+      $wantedinstock = Get-Content -Path $wantedinstockpath
+      [array] $summary = ""
+
+
+      function Send-PushoverNotification {
+          Param(
+            [Parameter(Mandatory=$true)]
+            [string]$message,
+            [string]$item
+          )
+          if($PushoverToken.Length -gt 1){
+              $uri = "https://api.pushover.net/1/messages.json"
+              $parameters = @{
+                  token = $PushoverToken
+                  user = $PushoverUser
+                  message = $message
+                  url = "https://uk.webuy.com/product-detail/?id=$item"
+              }
+              Write-Host "Sending Pushover Notification: $message"
+              $parameters | Invoke-RestMethod -Uri $uri -Method Post
+          }
+      }
+
+      foreach ($item in $items){
+          $detail = ConvertFrom-Json (Invoke-WebRequest https://wss2.cex.uk.webuy.io/v3/boxes/$item/detail)
+          $boxname = $detail.response.data.boxDetails.boxName
+          $qty = $detail.response.data.boxDetails.ecomQuantityOnHand
+          Write-Host "----------------------------------------------------------"
+          Write-Host "Checking quantity for $boxname"
+          $check = "$boxname; $qty"
+              
+          if (Select-String -Pattern $boxname -Path $wantedinstockpath) {
+              foreach ($line in $wantedinstock){
+                  if ($line -match $boxname){
+                      if ($line -notmatch $check){
+                          $oldqty = $line.split(";")
+                          $oldqty = $oldqty[1]
+                          $writeoutput = "$boxname has changed quantity from$oldqty to $qty."
+                          (Get-Content $wantedinstockpath) -replace $line, $check | Set-Content $wantedinstockpath
+                          Send-PushoverNotification -message $writeoutput -item $item #send pushover
+                      }
+                      else{
+                          $writeoutput = "No change for $boxname. Still has $qty in stock."
+                          Write-Host $writeoutput
+                      }
+                  }
+              }
+          }
+          else {
+              Write-Host "Updating stock file with '$check'"
+              $writeoutput = "$boxname currently has a quantity of $qty in stock."
+              Add-Content -Path $wantedinstockpath -Value $check
+          }
+
+          $summary += $writeoutput      
+          
+      }
+      Write-Host "------------------------Full Summary-----------------------" -ForegroundColor Yellow
+      for ($i = 1; $i -lt $summary.Count; $i++) {
+          if ($summary[$i].Contains("currently")) {
+              Write-Host $summary[$i] -ForegroundColor Green
+          }
+          else {
+              Write-Host $summary[$i] -ForegroundColor Red
+          }
+      }
+      $summary = ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cexitemstocheckqty
+data:
+  cexitemstocheckqty.txt: |-
+      3455191112235ab #MaximumCarnage w/ man
+      4012927055113 #MGR-CE
+      5023843008915ab #Empire of Steel w/ man
+      5023843024816ab #Spider-Man/X-Men w/ man
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cex-stock-qty-checker
+spec:
+  schedule: "0 */3 * * *"
+  startingDeadlineSeconds: 24001
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 5
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            k8s-app: cex-stock-qty-checker
+        spec:
+          containers:
+          - name: powershell
+            image: mcr.microsoft.com/powershell
+            imagePullPolicy: "Always"
+            command:
+            - /bin/sh
+            - -c
+            - "pwsh -ExecutionPolicy Unrestricted -NonInteractive -Command '/config/cexstoreqtycheck.ps1' -ItemsToCheckFilePath '/config/cexitemstocheckqty.txt' -PushoverToken 'ar7tq7fnrka1i1shvji2ej6qi2btoz' -PushoverUser 'uzdp3zaqsg5uxfz1ua5gviyyq4j2so'"
+            volumeMounts:
+              - mountPath: "/cex"
+                name: cex
+              - name: cexstoreqtycheck
+                mountPath: /config/cexstoreqtycheck.ps1
+                subPath: cexstoreqtycheck.ps1
+              - name: cexitemstocheckqty
+                mountPath: /config/cexitemstocheckqty.txt
+                subPath: cexitemstocheckqty.txt
+          volumes:
+            - name: cex
+              hostPath:
+                # directory location on host
+                path: /home/administrator/cex
+                # this field is optional
+                type: DirectoryOrCreate
+            - name: cexstoreqtycheck
+              configMap:
+                name: cexstoreqtycheck
+                defaultMode: 0777
+            - name: cexitemstocheckqty
+              configMap:
+                name: cexitemstocheckqty
+                defaultMode: 0777
+          restartPolicy: OnFailure
