@@ -101,6 +101,7 @@ data:
       4012927055113 #MGR-CE
       5023843008915ab #Empire of Steel w/ man
       5023843024816ab #Spider-Man/X-Men w/ man
+      3455198003826ab #SeparationAnxiety w/ man
 ---
 apiVersion: batch/v1
 kind: CronJob
