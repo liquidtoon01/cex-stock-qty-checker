@@ -109,7 +109,7 @@ kind: CronJob
 metadata:
   name: cex-stock-qty-checker
 spec:
-  schedule: "0 */3 * * *"
+  schedule: "0 */1 * * *"
   startingDeadlineSeconds: 24001
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 5
