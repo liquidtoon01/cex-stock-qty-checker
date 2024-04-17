@@ -97,13 +97,12 @@ metadata:
   name: cexitemstocheckqty
 data:
   cexitemstocheckqty.txt: |-
-      3455191112235ab #MaximumCarnage w/ man
       4012927055113 #MGR-CE
       5023843024816ab #Spider-Man/X-Men w/ man
       3455198003826ab #SeparationAnxiety w/ man
-      711719190950 #GranTurismo5-CE
+      ssegmd013b #Spider-Man 1995 W/o man
+      ssegmd013ab #Spider-Man 1995 W/ man
       5020717500032ab #Skeleton Krew
-      4974365610272ab #Decap Attack
 ---
 apiVersion: batch/v1
 kind: CronJob
