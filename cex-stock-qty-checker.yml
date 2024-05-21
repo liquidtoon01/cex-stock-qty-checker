@@ -100,9 +100,10 @@ data:
       4012927055113 #MGR-CE
       5023843024816ab #Spider-Man/X-Men w/ man
       3455198003826ab #SeparationAnxiety w/ man
-      ssegmd013b #Spider-Man 1995 W/o man
-      ssegmd013ab #Spider-Man 1995 W/ man
       5020717500032ab #Skeleton Krew
+      4012927053164 #NoMoreHeroes
+      4974365615352ab #AdventuresofBatmanAndRobin w/ man
+      4974365615352b #AdventuresofBatmanAndRobin wo/ man
 ---
 apiVersion: batch/v1
 kind: CronJob
