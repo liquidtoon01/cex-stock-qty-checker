@@ -26,7 +26,7 @@ jobs:
       - name: Check Stores
         shell: pwsh
         run: |
-          . '.\cex-stock-qty-checker.ps1' -ItemsToCheckFilePath .\items-to-check.txt -PushoverToken ${{ secrets.PUSHOVER_TOKEN }} -PushoverUser ${{ secrets.PUSHOVER_USER }} 
+          . '.\cex-stock-qty-checker.ps1' -ItemsToCheckFilePath .\items-to-check.txt -PushoverToken ${{ secrets.PUSHOVER_TOKEN }} -PushoverUser ${{ secrets.PUSHOVER_USER }}
       - name: Commit stock change
         run: |
           git config --global user.name 'liquidtoon01'
