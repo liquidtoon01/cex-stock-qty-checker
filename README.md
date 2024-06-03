@@ -1,4 +1,4 @@
-# cex-stock-qty-checker
+# CeX Stock Qty Checker
 PowerShell script to check specific items for changes in quantity available and can send a notification to your device using Pushover
 https://pushover.net/
 
