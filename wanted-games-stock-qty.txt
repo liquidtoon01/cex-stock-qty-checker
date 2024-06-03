@@ -1,3 +1,6 @@
 Maximum Carnage, Boxed; 6
 Castlevania New Generation, Boxed; 10
 Choplifter 3, Boxed; 1
+Choplifter 3, w/o Manual, Boxed; 0
+Maximum Carnage, w/o Manual, Boxed; 8
+Castlevania New Generation, w/o Manual, Boxed; 12
