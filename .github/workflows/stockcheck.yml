@@ -4,6 +4,8 @@ name: StockCheck
 
 # Controls when the workflow will run
 on:
+  push:
+  pull_request:
   schedule:
     - cron: "0 * * * *"   # <=== Change this value
 
