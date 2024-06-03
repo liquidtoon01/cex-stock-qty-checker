@@ -2,15 +2,22 @@
 PowerShell script to check specific items for changes in quantity available and can send a notification to your device using Pushover
 https://pushover.net/
 
-![Screenshot of notifications](image-4.PNG)
+[What is Pushover and how do I use it?](https://support.pushover.net/i7-what-is-pushover-and-how-do-i-use-it)
+
+![Screenshot of notifications](repo-images/image-4.PNG)
 
 And to get a summary.
 
-![summary of what is currently in stock](image-2.png)
+![summary of what is currently in stock](repo-images/image-2.png)
 
 This script is meant for the rare items that are always in stock due to their poor quality, but where new copies become available. An example of this is Choplifter 3, Boxed, where there is one copy in stock, however it is known that this is of poor quality. This script will inform you if a second copy becomes available.
 
-It is advised to use this script on a schedule to be automatically alerted when stock is changed for your chosen item. Windows Task Scheduler is a perfect example of this. An WTS XML file has been provided as an example in this repo.
+## Example setups
+It is advised to use this script on a schedule to be automatically alerted when stock is changed for your chosen item. Three examples are provided in this repo;
+
+- [Kubernetes CronJob](kubernetes-deployments/cex-stock-qty-checker.yml)
+- [Windows Task Scheduler](windows-task-scheduler-example/cex-stock-qty-checker.xml)
+- [Github Action](.github/workflows/stockcheck.yml)
 
 The Powershell script has three parameters;
 
@@ -24,7 +31,7 @@ The Powershell script has three parameters;
 ## ItemsToCheckFilePath
 You need to input the ID's of the items you want to check. This is found in the URL of the item
 
-![example of where to get the ID of the product](image.png) 
+![example of where to get the ID of the product](repo-images/image.png) 
 
 an example file is provided in this repo.
 
