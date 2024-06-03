@@ -56,6 +56,7 @@ foreach ($item in $items){
                     $oldqty = $oldqty[1]
                     $writeoutput = "$boxname has changed quantity from$oldqty to $qty."
                     (Get-Content $wantedinstockpath) -replace $line, $check | Set-Content $wantedinstockpath
+                    Write-Host "Sending Pushover Notification..."
                     Send-PushoverNotification -message $writeoutput -item $item #send pushover
                 }
                 else{
